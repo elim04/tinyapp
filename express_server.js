@@ -13,6 +13,12 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+//new route handler for /urls to pass the URL data to template
+app.get("/urls", (req, res) => {
+  const templateVars = {urls: urlDatabase}; //note when sending variables to EJS template, we need to send them inside an object
+  res.render("urls_index", templateVars);
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
