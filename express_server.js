@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; //default port is 8080
-
 const bodyParser = require("body-parser");
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 //Function for generating random string of 6 characters
@@ -72,6 +72,7 @@ app.post("/urls", (req, res) => {
 
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
+  //deleting the url from the urlDatabase using the req params info
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
