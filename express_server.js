@@ -10,7 +10,7 @@ const generateRandomString = function() {
   let result = "";
 
   for (let i = 0; i < 6; i++) {
-    let index = Math.ceil(Math.random() * characters.length);
+    let index = Math.ceil(Math.random() * 61);
     result += characters[index];
   }
 
