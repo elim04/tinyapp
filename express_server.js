@@ -77,6 +77,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/urls/:id", (req, res) => {
+  res.send('ok');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
