@@ -77,8 +77,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls/:id", (req, res) => {
-  res.send('ok');
+//to Update a long url 
+app.post("/urls/:shortURL", (req, res) => {
+  let newURL = req.body.newURL;
+  urlDatabase[req.params.shortURL] = req.body.newURL;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
