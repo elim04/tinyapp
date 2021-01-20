@@ -83,7 +83,8 @@ app.get("/urls", (req, res) => {
     user: currentUser,
     urls: urlDatabase
   }; //note when sending variables to EJS template, we need to send them inside an object
-  res.render("urls_index", templateVars);
+    res.render("urls_index", templateVars);
+
 });
 
 app.get("/urls/new", (req, res) => {
@@ -91,7 +92,13 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: currentUser
   };
-  res.render("urls_new", templateVars);
+  //modify to only allow registered and logged in users to create tiny URLS
+  if (currentUser) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
+  
 });
 
 app.get("/register", (req, res) => {
@@ -107,6 +114,7 @@ app.get("/login", (req, res) => {
   const templateVars = {
     user: currentUser
   };
+
   res.render("login", templateVars);
 });
 
@@ -168,7 +176,6 @@ app.post("/login", (req, res) => {
   let userEmail = req.body.email;
   let userPassword =req.body.password;
   let userID = userIDReturner(users, userEmail);
-  console.log("userID", userID);
   //look up email address in user object
   
   //check if it exists using helper function
