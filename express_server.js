@@ -71,7 +71,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/urls/register", (req, res) => {
+app.get("/register", (req, res) => {
   let currentUser = users[req.cookies["user_id"]];
   const templateVars = {
     user: currentUser
@@ -79,9 +79,9 @@ app.get("/urls/register", (req, res) => {
   res.render("register", templateVars);
 })
 
-app.get("/urls/login", (req, res) => {
+app.get("/login", (req, res) => {
 
-  res.send("login");
+  res.render("login");
 });
 
 
