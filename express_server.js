@@ -80,8 +80,11 @@ app.get("/register", (req, res) => {
 })
 
 app.get("/login", (req, res) => {
-
-  res.render("login");
+  let currentUser = users[req.cookies["user_id"]];
+  const templateVars = {
+    user: currentUser
+  };
+  res.render("login", templateVars);
 });
 
 
