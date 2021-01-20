@@ -27,6 +27,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.ca"
 };
 
+//Global object for users
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
 //Routing
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -42,6 +56,13 @@ app.get("/urls/new", (req, res) => {
   };
   res.render("urls_new", templateVars);
 });
+
+app.get("/urls/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("user_regist", templateVars);
+})
 
 app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
@@ -105,6 +126,22 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie('username', req.body.username);
   res.redirect("/urls")
+});
+
+//generating a new user request
+app.post("/register", (req, res) => {
+  let id = generateRandomString();
+  let email = req.body.email;
+  let password = req.body.password;
+  //adding new user object to users object
+  users[id] = {
+    id,
+    email,
+    password
+  };
+  res.cookie('user_id', id);
+  res.redirect("/urls");
+
 });
 
 app.listen(PORT, () => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!--Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>User Registration</title>
+  <title>User Registration on TinyApp</title>
 </head>
 <header>
   <%- include('partials/_header') %>
@@ -13,7 +13,7 @@
 <body>
   <div style="margin: 1em;">
     <form method="POST" action="/register">
-      <h3>User Registration Page</h3>
+      <h3>Create User Account</h3>
       <div class="form-group">
           <label for="emailaddress">Email Address</label>
           <input type="email" name="email" class="form-control" id="emailaddress" placeholder="Enter email here...">
@@ -22,7 +22,7 @@
           <label for="password">Password</label>
           <input type="password" name="password" class="form-control" id="password" placeholder="Password">
       </div>
-      <button class="btn btn-primary">Submit!</button>
+        <button class="btn btn-primary">Register!</button>
     </form>
   </div>
 </body>
