@@ -1,8 +1,12 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; //default port is 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+
+const app = express();
+const PORT = 8080; //default port is 8080
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 //Function for generating random string of 6 characters
 const generateRandomString = function() {
@@ -18,9 +22,6 @@ const generateRandomString = function() {
 };
 
 app.set("view engine", "ejs");
-
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -64,7 +65,7 @@ app.get("/urls/register", (req, res) => {
   const templateVars = {
     user: currentUser
   };
-  res.render("user_regist", templateVars);
+  res.render("register", templateVars);
 })
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -84,9 +85,9 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
@@ -97,7 +98,6 @@ app.get("/u/:shortURL", (req, res) => {
 //Posting
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   let id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
   res.redirect(`/urls/${id}`);
@@ -107,41 +107,47 @@ app.post("/urls", (req, res) => {
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
   //deleting the url from the urlDatabase using the req params info
-  delete urlDatabase[req.params.shortURL];
+  let URLToDelete = urlDatabase[req.params.shortURL];
+  delete URLToDelete;
   res.redirect("/urls");
 });
 
 //to Update a long url 
 app.post("/urls/:shortURL", (req, res) => {
   let newURL = req.body.newURL;
+  //adding URL to database
   urlDatabase[req.params.shortURL] = newURL;
   res.redirect("/urls");
 });
 
 //to login to your profile route
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body.username);
   res.clearCookie('user_id', req.cookies["user_id"]);
   res.redirect("/urls")
 });
 
 //generating a new user request
 app.post("/register", (req, res) => {
-  let id = generateRandomString();
-  let email = req.body.email;
-  let password = req.body.password;
-  //adding new user object to users object
-  users[id] = {
-    id,
-    email,
-    password
+  
+  let newId = generateRandomString();
+  let newEmail = req.body.email;
+  let newPassword = req.body.password;
+  //creating new user object
+  const newUser = {
+    id: newId,
+    email: newEmail,
+    password: newPassword
   };
-  res.cookie('user_id', id);
+
+  //adding new user to database
+  users[newId] = newUser;
+
+  res.cookie('user_id', newId);
   res.redirect("/urls");
 
 });
