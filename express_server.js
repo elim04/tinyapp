@@ -58,8 +58,8 @@ const userIDReturner = function(userDatabase, email) {
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.ca"
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID:"userRandomID"},
+  "9sm5xK": {longURL:"http://www.google.ca", userID:"user2RandomID"}
 };
 
 //Global object for users
@@ -122,13 +122,13 @@ app.get("/login", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
   //determine if longURL exists, if it does not redirect to homepage
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   let currentUser = users[req.cookies["user_id"]];
   if (longURL) {   
     const templateVars = { 
       user: currentUser,
       shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL]
+      longURL: longURL
      };
     res.render("urls_shows", templateVars);
   } else {
@@ -141,7 +141,7 @@ app.get("/urls/:shortURL", (req, res) => {
 // });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -149,8 +149,9 @@ app.get("/u/:shortURL", (req, res) => {
 //Posting
 
 app.post("/urls", (req, res) => {
+  let currentUser = users[req.cookies["user_id"]]
   let id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
+  urlDatabase[id] = {longURL: req.body.longURL, userID: currentUser};
   res.redirect(`/urls/${id}`);
   
 });
@@ -158,8 +159,7 @@ app.post("/urls", (req, res) => {
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
   //deleting the url from the urlDatabase using the req params info
-  let URLToDelete = urlDatabase[req.params.shortURL];
-  delete URLToDelete;
+  delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
