@@ -43,7 +43,7 @@ const users = {
 
 //Routing
 app.get("/urls", (req, res) => {
-  let currentUser = users[req.cookies["user_Id"]];
+  let currentUser = users[req.cookies["user_id"]];
   const templateVars = {
     user: currentUser,
     urls: urlDatabase
@@ -52,7 +52,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let currentUser = users[req.cookies["user_Id"]];
+  let currentUser = users[req.cookies["user_id"]];
   const templateVars = {
     user: currentUser
   };
@@ -60,7 +60,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/register", (req, res) => {
-  let currentUser = users[req.cookies["user_Id"]];
+  let currentUser = users[req.cookies["user_id"]];
   const templateVars = {
     user: currentUser
   };
@@ -71,7 +71,7 @@ app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
   //determine if longURL exists, if it does not redirect to homepage
   let longURL = urlDatabase[req.params.shortURL];
-  let currentUser = users[req.cookies["user_Id"]];
+  let currentUser = users[req.cookies["user_id"]];
   if (longURL) {   
     const templateVars = { 
       user: currentUser,
@@ -126,6 +126,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('username', req.body.username);
+  res.clearCookie('user_id', req.cookies["user_id"]);
   res.redirect("/urls")
 });
 
