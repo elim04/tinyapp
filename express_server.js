@@ -21,16 +21,39 @@ const generateRandomString = function() {
   return result;
 };
 
-//helper function for register route
+//helper function to check if user exists in database
 const userAlreadyExists = function(userDatabase, email) {
   for (let user in userDatabase) {
     if (userDatabase[user].email === email) {
       return true;
-    } else {
-      return false;
-    }
+    } 
   }
 };
+
+//helper function to check for correct password
+
+const userAuthenticator = function(userDatabase, email, password) {
+  for (let user in userDatabase) {
+    console.log("user", user);
+    if (userDatabase[user].email === email) {
+      if (userDatabase[user].password === password) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+//helper function to return userID
+const userIDReturner = function(userDatabase, email) {
+  for (let user in userDatabase) {
+    if (userDatabase[user].email === email) {
+      let userID = userDatabase[user].id;
+      return userID;
+    } 
+  }
+};
+
 
 app.set("view engine", "ejs");
 
@@ -142,13 +165,27 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //to login to your profile route
 app.post("/login", (req, res) => {
+  let userEmail = req.body.email;
+  let userPassword =req.body.password;
+  let userID = userIDReturner(users, userEmail);
+  console.log("userID", userID);
+  //look up email address in user object
   
-  res.redirect("/urls");
+  //check if it exists using helper function
+  if (userAuthenticator(users, userEmail, userPassword)) {
+    //if both pass, set user_id cookie matching users random ID and redirect to /urls
+    console.log("YAY");
+    res.cookie('user_id', userID);
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("ERROR 403");
+  }
+
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id', req.cookies["user_id"]);
-  res.redirect("/urls")
+  res.redirect("/login")
 });
 
 //generating a new user request
@@ -160,9 +197,9 @@ app.post("/register", (req, res) => {
   //creating new user object
   //if email or password is empty render 400 status code
   if (!newEmail || !newPassword) {
-    res.status(400).send('ERROR 400');
+    res.status(400).send('ERROR 400 - if missing info');
   } else if (userAlreadyExists(users, newEmail)) {
-    res.status(400).send('ERROR 400');
+    res.status(400).send('ERROR 400 - if exists');
   } else {
     const newUser = {
       id: newId,
@@ -171,7 +208,7 @@ app.post("/register", (req, res) => {
     };
     //adding new user to database
     users[newId] = newUser;
-  
+    // console.log(users);
     res.cookie('user_id', newId);
     res.redirect("/urls");
   }
