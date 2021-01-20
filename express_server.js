@@ -178,7 +178,7 @@ app.post("/login", (req, res) => {
     res.cookie('user_id', userID);
     res.redirect("/urls");
   } else {
-    res.status(403).send("ERROR 403");
+    res.sendStatus(403);
   }
 
 });
@@ -197,9 +197,9 @@ app.post("/register", (req, res) => {
   //creating new user object
   //if email or password is empty render 400 status code
   if (!newEmail || !newPassword) {
-    res.status(400).send('ERROR 400 - if missing info');
+    res.sendStatus(400);
   } else if (userAlreadyExists(users, newEmail)) {
-    res.status(400).send('ERROR 400 - if exists');
+    res.sendStatus(400);
   } else {
     const newUser = {
       id: newId,
