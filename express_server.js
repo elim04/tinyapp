@@ -21,6 +21,17 @@ const generateRandomString = function() {
   return result;
 };
 
+//helper function for register route
+const userAlreadyExists = function(userDatabase, email) {
+  for (let user in userDatabase) {
+    if (userDatabase[user].email === email) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -138,17 +149,23 @@ app.post("/register", (req, res) => {
   let newEmail = req.body.email;
   let newPassword = req.body.password;
   //creating new user object
-  const newUser = {
-    id: newId,
-    email: newEmail,
-    password: newPassword
-  };
-
-  //adding new user to database
-  users[newId] = newUser;
-
-  res.cookie('user_id', newId);
-  res.redirect("/urls");
+  //if email or password is empty render 400 status code
+  if (!newEmail || !newPassword) {
+    res.status(400).send('ERROR 400');
+  } else if (userAlreadyExists(users, newEmail)) {
+    res.status(400).send('ERROR 400');
+  } else {
+    const newUser = {
+      id: newId,
+      email: newEmail,
+      password: newPassword
+    };
+    //adding new user to database
+    users[newId] = newUser;
+  
+    res.cookie('user_id', newId);
+    res.redirect("/urls");
+  }
 
 });
 
