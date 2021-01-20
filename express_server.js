@@ -43,23 +43,26 @@ const users = {
 
 //Routing
 app.get("/urls", (req, res) => {
+  let currentUser = users[req.cookies["user_Id"]];
   const templateVars = {
-    username: req.cookies["username"],
+    user: currentUser,
     urls: urlDatabase
   }; //note when sending variables to EJS template, we need to send them inside an object
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  let currentUser = users[req.cookies["user_Id"]];
   const templateVars = {
-    username: req.cookies["username"]
+    user: currentUser
   };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/register", (req, res) => {
+  let currentUser = users[req.cookies["user_Id"]];
   const templateVars = {
-    username: req.cookies["username"]
+    user: currentUser
   };
   res.render("user_regist", templateVars);
 })
@@ -68,19 +71,17 @@ app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
   //determine if longURL exists, if it does not redirect to homepage
   let longURL = urlDatabase[req.params.shortURL];
-  if (longURL) {
-    
+  let currentUser = users[req.cookies["user_Id"]];
+  if (longURL) {   
     const templateVars = { 
-      username: req.cookies["username"],
+      user: currentUser,
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL]
      };
     res.render("urls_shows", templateVars);
-
   } else {
     res.send("URL does not exist.");
   }
-
 });
 
 app.get("/urls.json", (req, res) => {
