@@ -11,15 +11,18 @@
   <%- include('partials/_header') %>
 </header>
 <body>
-  <div>
+  <div style="margin: 1em;">
     <form method="POST" action="/register">
-      <fieldset>
-        <legend>User Registration Page</legend>
+      <h3>User Registration Page</h3>
+      <div class="form-group">
           <label for="emailaddress">Email Address</label>
-          <input type="email" name="email" id="emailaddress" placeholder="yourname@email.com">
+          <input type="email" name="email" class="form-control" id="emailaddress" placeholder="Enter email here...">
+      </div>
+      <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" name="password" id="password">
-      </fieldset>
+          <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+      </div>
+      <button class="btn btn-primary">Submit!</button>
     </form>
   </div>
 </body>
