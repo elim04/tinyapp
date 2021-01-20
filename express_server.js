@@ -79,6 +79,12 @@ app.get("/urls/register", (req, res) => {
   res.render("register", templateVars);
 })
 
+app.get("/urls/login", (req, res) => {
+
+  res.send("login");
+});
+
+
 app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
   //determine if longURL exists, if it does not redirect to homepage
