@@ -30,11 +30,10 @@ const userAlreadyExists = function(userDatabase, email) {
   }
 };
 
-//helper function to check for correct password
+//helper function to check for correct password for user email first check if email exists then password
 
 const userAuthenticator = function(userDatabase, email, password) {
   for (let user in userDatabase) {
-    console.log("user", user);
     if (userDatabase[user].email === email) {
       if (userDatabase[user].password === password) {
         return true;
@@ -172,7 +171,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 
-//Posting
+//Posting aka request changes to website via client
 
 app.post("/urls", (req, res) => {
   let currentUser = users[req.cookies["user_id"]]
@@ -185,25 +184,31 @@ app.post("/urls", (req, res) => {
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
   let currentUser = users[req.cookies["user_id"]];
-  //deleting the url from the urlDatabase using the req params info
-  if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls");
+  // check if current user is logged in
+  if (currentUser) { 
+    //checking if url belongs to urls for user before allowing them to delete
+    if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
+      delete urlDatabase[req.params.shortURL];
+      res.redirect("/urls");
+    } 
+  } else {
+    //status code FORBIDDION ACTION
+    res.sendStatus(403);
   }
-//add urls_shows conditional to display error if trying to delete not their own.
+
 });
 
 //to Update a long url 
 app.post("/urls/:shortURL", (req, res) => {
   let currentUser = users[req.cookies["user_id"]];
-  
+  //check if URL belongs to user's list then they can edit
   if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
   
     let newURL = req.body.newURL;
     //adding URL to database
     urlDatabase[req.params.shortURL].longURL = newURL;
     res.redirect("/urls");
-  }
+  } 
 
 });
 
