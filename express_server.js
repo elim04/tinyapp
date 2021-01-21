@@ -63,6 +63,7 @@ const urlsForUser = function(urlDatabase, userID) {
       userSpecificURLS[key] = urlDatabase[key];
     }
   }
+  console.log("userSpecificURLS", userSpecificURLS)
   return userSpecificURLS;
 };
 
@@ -78,7 +79,7 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password: "puppies"
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -136,21 +137,27 @@ app.get("/urls/:shortURL", (req, res) => {
   //determine if longURL exists, if it does not redirect to homepage
   let longURL = urlDatabase[req.params.shortURL].longURL;
   let currentUser = users[req.cookies["user_id"]];
+  let display;
+  console.log("currentUser", currentUser);
+  //to determine if url belongs to current user to display show page
+  if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
+    display = true;
+  } else {
+    display = false;
+  }
+
   if (longURL) {   
     const templateVars = { 
       user: currentUser,
       shortURL: req.params.shortURL,
-      longURL: longURL
+      longURL: longURL,
+      display
      };
     res.render("urls_shows", templateVars);
   } else {
     res.send("URL does not exist.");
   }
 });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
@@ -163,24 +170,34 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   let currentUser = users[req.cookies["user_id"]]
   let id = generateRandomString();
-  urlDatabase[id] = {longURL: req.body.longURL, userID: currentUser};
+  urlDatabase[id] = {longURL: req.body.longURL, userID: currentUser.id};
   res.redirect(`/urls/${id}`);
   
 });
 
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
+  let currentUser = users[req.cookies["user_id"]];
   //deleting the url from the urlDatabase using the req params info
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }
+
 });
 
 //to Update a long url 
 app.post("/urls/:shortURL", (req, res) => {
-  let newURL = req.body.newURL;
-  //adding URL to database
-  newURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect("/urls");
+  let currentUser = users[req.cookies["user_id"]];
+  
+  if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
+  
+    let newURL = req.body.newURL;
+    //adding URL to database
+    urlDatabase[req.params.shortURL].longURL = newURL;
+    res.redirect("/urls");
+  }
+
 });
 
 //to login to your profile route
