@@ -115,5 +115,4 @@ describe('urlsForUser', function() {
 
     assert.deepEqual(userURLList, expectedOutput);
   });
-
 });
