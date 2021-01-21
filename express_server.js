@@ -1,5 +1,5 @@
 const express = require("express");
-const {generateRandomString, getUserByEmail, userAlreadyExists, userAuthenticator, userIDReturner, urlsForUser} = require('./helpers');
+const {generateRandomString, userAlreadyExists, userAuthenticator, userIDReturner, urlsForUser} = require('./helpers');
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
@@ -37,6 +37,17 @@ const users = {
 };
 
 //Routing
+
+
+app.get("/", (req, res) => {
+  let currentUser = users[req.session["user_id"]];
+  if (currentUser) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 app.get("/urls", (req, res) => {
   let currentUser = users[req.session["user_id"]];
   if (currentUser) {
@@ -178,11 +189,11 @@ app.post("/login", (req, res) => {
     req.session['user_id'] = userID;
     res.redirect("/urls");
   } else {
-    const templateVars = { 
+    const templateVars = {
       error: "Error in credentials",
       user: true //to show login page properly need to set to true to render page
     };
-    res.render("login", templateVars)
+    res.render("login", templateVars);
     // res.status(403).redirect("/login");
   }
 
@@ -207,14 +218,14 @@ app.post("/register", (req, res) => {
     const templateVars = {
       user: true,
       error: "Email or Password input error!"
-    }
+    };
     res.render("register", templateVars);
     // res.status(400).redirect("/login");
   } else if (userAlreadyExists(users, newEmail)) {
     const templateVars = {
       user: true,
       error: "Email already exists as user!"
-    }
+    };
     res.render("register", templateVars);
     // res.status(400).redirect("/login");
   } else {
