@@ -54,6 +54,17 @@ const userIDReturner = function(userDatabase, email) {
   }
 };
 
+//function for returning uRLS when userID is equal to id of currently logged in user
+const urlsForUser = function(urlDatabase, userID) {
+  let userSpecificURLS = {};
+
+  for (let key in urlDatabase) {
+    if (userID === urlDatabase[key].userID) {
+      userSpecificURLS[key] = urlDatabase[key];
+    }
+  }
+  return userSpecificURLS;
+};
 
 app.set("view engine", "ejs");
 
@@ -79,11 +90,12 @@ const users = {
 //Routing
 app.get("/urls", (req, res) => {
   let currentUser = users[req.cookies["user_id"]];
+  let userSpecificURLs = urlsForUser(urlDatabase, currentUser.id);
   const templateVars = {
     user: currentUser,
-    urls: urlDatabase
+    urls: userSpecificURLs
   }; //note when sending variables to EJS template, we need to send them inside an object
-    res.render("urls_index", templateVars);
+      res.render("urls_index", templateVars);
 
 });
 
@@ -93,10 +105,10 @@ app.get("/urls/new", (req, res) => {
     user: currentUser
   };
   //modify to only allow registered and logged in users to create tiny URLS
-  if (currentUser) {
-    res.render("urls_new", templateVars);
-  } else {
+  if (!currentUser) {
     res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
   }
   
 });
@@ -167,7 +179,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   let newURL = req.body.newURL;
   //adding URL to database
-  urlDatabase[req.params.shortURL] = newURL;
+  newURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect("/urls");
 });
 
