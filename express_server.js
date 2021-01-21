@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
+// const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -8,7 +9,11 @@ const app = express();
 const PORT = 8080; //default port is 8080
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
+// app.use(cookieParser());
 
 //Function for generating random string of 6 characters
 const generateRandomString = function() {
@@ -64,7 +69,7 @@ const urlsForUser = function(urlDatabase, userID) {
       userSpecificURLS[key] = urlDatabase[key];
     }
   }
-  console.log("userSpecificURLS", userSpecificURLS)
+  // console.log("userSpecificURLS", userSpecificURLS)
   return userSpecificURLS;
 };
 
@@ -80,18 +85,18 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "puppies"
+    password: bcrypt.hashSync("puppies", saltRounds)
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("kitties", saltRounds)
   }
 };
 
 //Routing
 app.get("/urls", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   if (currentUser) {
     let userSpecificURLs = urlsForUser(urlDatabase, currentUser["id"]);
     const templateVars = {
@@ -109,7 +114,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   const templateVars = {
     user: currentUser
   };
@@ -123,7 +128,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   const templateVars = {
     user: currentUser
   };
@@ -131,7 +136,7 @@ app.get("/register", (req, res) => {
 })
 
 app.get("/login", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   const templateVars = {
     user: currentUser
   };
@@ -144,7 +149,7 @@ app.get("/urls/:shortURL", (req, res) => {
   //route parameter is req.params.shortURL
   //determine if longURL exists, if it does not redirect to homepage
   let longURL = urlDatabase[req.params.shortURL].longURL;
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   let display;
   console.log("currentUser", currentUser);
   //to determine if url belongs to current user to display show page
@@ -176,7 +181,7 @@ app.get("/u/:shortURL", (req, res) => {
 //Posting aka request changes to website via client
 
 app.post("/urls", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]]
+  let currentUser = users[req.session["user_id"]]
   let id = generateRandomString();
   urlDatabase[id] = {longURL: req.body.longURL, userID: currentUser.id};
   res.redirect(`/urls/${id}`);
@@ -185,7 +190,7 @@ app.post("/urls", (req, res) => {
 
 //To delete a url from database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   // check if current user is logged in
   if (currentUser) { 
     //checking if url belongs to urls for user before allowing them to delete
@@ -202,7 +207,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //to Update a long url 
 app.post("/urls/:shortURL", (req, res) => {
-  let currentUser = users[req.cookies["user_id"]];
+  let currentUser = users[req.session["user_id"]];
   //check if URL belongs to user's list then they can edit
   if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
   
@@ -225,7 +230,7 @@ app.post("/login", (req, res) => {
   if (userAuthenticator(users, userEmail, userPassword)) {
     //if both pass, set user_id cookie matching users random ID and redirect to /urls
     console.log("YAY");
-    res.cookie('user_id', userID);
+    req.session['user_id'] = userID;
     res.redirect("/urls");
   } else {
     res.sendStatus(403);
@@ -234,7 +239,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id', req.cookies["user_id"]);
+  req.session['user_id'] = null;
   res.redirect("/login")
 });
 
@@ -259,7 +264,7 @@ app.post("/register", (req, res) => {
     //adding new user to database
     users[newId] = newUser;
     // console.log(users);
-    res.cookie('user_id', newId);
+    req.session['user_id'] = newId;
     res.redirect("/urls");
   }
 
