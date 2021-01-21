@@ -91,12 +91,19 @@ const users = {
 //Routing
 app.get("/urls", (req, res) => {
   let currentUser = users[req.cookies["user_id"]];
-  let userSpecificURLs = urlsForUser(urlDatabase, currentUser.id);
-  const templateVars = {
-    user: currentUser,
-    urls: userSpecificURLs
-  }; //note when sending variables to EJS template, we need to send them inside an object
-      res.render("urls_index", templateVars);
+  if (currentUser) {
+    let userSpecificURLs = urlsForUser(urlDatabase, currentUser["id"]);
+    const templateVars = {
+      user: currentUser,
+      urls: userSpecificURLs
+    }; //note when sending variables to EJS template, we need to send them inside an object
+        res.render("urls_index", templateVars);
+  } else {
+    const templateVars = {
+      user: false
+    }
+    res.render("urls_index", templateVars);
+  }
 
 });
 
@@ -183,7 +190,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   }
-
+//add urls_shows conditional to display error if trying to delete not their own.
 });
 
 //to Update a long url 
