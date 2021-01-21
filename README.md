@@ -4,8 +4,12 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["Screenshot of Login Page"](https://github.com/elim04/tinyapp/blob/master/docs/login_page.png)
+!["Screenshot of New URL Page"](https://github.com/elim04/tinyapp/blob/master/docs/new_url_page.png)
+!["Screenshot of Show Page"](https://github.com/elim04/tinyapp/blob/master/docs/url_show_page.png)
+!["Screenshot of Main URL Page Logged In"](https://github.com/elim04/tinyapp/blob/master/docs/urls_index_page_logged_in.png)
+!["Screenshot of Main URL Page Logged Out"](https://github.com/elim04/tinyapp/blob/master/docs/urls_index_page_logged_out.png)
+!["Screenshot of Register New User Page"](https://github.com/elim04/tinyapp/blob/master/docs/urls_register_page.png)
 
 ## Dependencies
 
