@@ -7,9 +7,9 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const app = express();
-const PORT = 8080; //default port is 8080
+const PORT = 8080; 
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -42,6 +42,7 @@ app.get("/urls", (req, res) => {
   let currentUser = users[req.session["user_id"]];
   if (currentUser) {
     let userSpecificURLs = urlsForUser(urlDatabase, currentUser["id"]);
+    console.log("userSpecific URLS", userSpecificURLs);
     const templateVars = {
       user: currentUser,
       urls: userSpecificURLs
@@ -143,7 +144,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     } 
   } else {
     //status code Forbiddon ooooou
-    res.sendStatus(403);
+    res.status(403).redirect("/login");
   }
 
 });
@@ -172,11 +173,11 @@ app.post("/login", (req, res) => {
   //check if it exists using helper function
   if (userAuthenticator(users, userEmail, userPassword)) {
     //if both pass, set user_id cookie matching users random ID and redirect to /urls
-    console.log("YAY");
+    // console.log("YAY");
     req.session['user_id'] = userID;
     res.redirect("/urls");
   } else {
-    res.sendStatus(403);
+    res.Status(403).redirect("/login");
   }
 
 });
@@ -195,15 +196,15 @@ app.post("/register", (req, res) => {
   //creating new user object
   //if email or password is empty render 400 status code
   if (!newEmail || !newPassword) {
-    res.sendStatus(400);
+    res.Status(400).redirect("/login");
   } else if (userAlreadyExists(users, newEmail)) {
-    res.sendStatus(400);
+    res.Status(400).redirect("/login");
   } else {
     const newUser = {
       id: newId,
       email: newEmail,
       password: bcrypt.hashSync(newPassword, saltRounds)
-    };
+    }
     //adding new user to database
     users[newId] = newUser;
     // console.log(users);

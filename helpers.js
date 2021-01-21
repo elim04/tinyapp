@@ -1,7 +1,7 @@
 //helpers.js 
 //helper functions for express_server.js
 const bcrypt = require('bcrypt');
-
+const saltRounds = 10;
 //Function for generating random string of 6 characters
 const generateRandomString = function() {
   const characters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -32,6 +32,7 @@ const userAlreadyExists = function(userDatabase, email) {
       return true;
     } 
   }
+  return false;
 };
 
 //helper function to check for correct password for user email first check if email exists then password
