@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const app = express();
 const PORT = 8080; //default port is 8080
@@ -35,7 +37,7 @@ const userAlreadyExists = function(userDatabase, email) {
 const userAuthenticator = function(userDatabase, email, password) {
   for (let user in userDatabase) {
     if (userDatabase[user].email === email) {
-      if (userDatabase[user].password === password) {
+      if (bcrypt.compareSync(password, userDatabase[user].password)) {
         return true;
       }
     }
@@ -252,7 +254,7 @@ app.post("/register", (req, res) => {
     const newUser = {
       id: newId,
       email: newEmail,
-      password: newPassword
+      password: bcrypt.hashSync(newPassword, saltRounds)
     };
     //adding new user to database
     users[newId] = newUser;
