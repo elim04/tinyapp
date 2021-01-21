@@ -7,18 +7,18 @@ const {generateRandomString, getUserByEmail, userAlreadyExists, userAuthenticato
 
 const testUsers = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: bcrypt.hashSync("puppies", saltRounds)
   },
   "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: bcrypt.hashSync("kitties", saltRounds)
   },
   "user3RandomID": {
-    id: "user3RandomID", 
-    email: "user3@example.com", 
+    id: "user3RandomID",
+    email: "user3@example.com",
     password: bcrypt.hashSync("turtles", saltRounds)
   }
 };
@@ -40,7 +40,7 @@ describe('getUserByEmail', function() {
 });
 
 describe('generateRandomString', function() {
-  it('should return a generated random string of 6 characters', function () {
+  it('should return a generated random string of 6 characters', function() {
     const newID = generateRandomString();
     const expectedOutput = 6;
     assert.equal(newID.length, expectedOutput);

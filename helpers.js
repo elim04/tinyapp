@@ -1,5 +1,6 @@
 //helpers.js 
 //helper functions for express_server.js
+//need bcrypt for userAuthenticator function to
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 //Function for generating random string of 6 characters
