@@ -104,22 +104,26 @@ app.get("/urls/:shortURL", (req, res) => {
   let currentUser = users[req.session["user_id"]];
   let display;
   //to determine if url belongs to current user
-  if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
-    display = true; //will show urls on page
+  if (currentUser) {
+    if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
+      display = true; //will show urls on page
+    } else {
+      display = false; //will trigger error on page
+    }
+    //check if long URL is true/false to determine if can show page or not
+    if (longURL) {
+      const templateVars = {
+        user: currentUser,
+        shortURL: req.params.shortURL,
+        longURL: longURL,
+        display
+      };
+      res.render("urls_shows", templateVars);
+    } else {
+      res.send("URL does not exist.");
+    }
   } else {
-    display = false; //will trigger error on page
-  }
-  //check if long URL is true/false to determine if can show page or not
-  if (longURL) {
-    const templateVars = {
-      user: currentUser,
-      shortURL: req.params.shortURL,
-      longURL: longURL,
-      display
-    };
-    res.render("urls_shows", templateVars);
-  } else {
-    res.send("URL does not exist.");
+    res.status(403).redirect("/login");
   }
 });
 
@@ -209,6 +213,7 @@ app.post("/register", (req, res) => {
     res.render("register", templateVars);
     // res.status(400).redirect("/login"); --alternative send status code and redirect to login
   } else {
+    //if we have made it this far, we can create the new user
     const newUser = {
       id: newId,
       email: newEmail,
