@@ -2,6 +2,7 @@ const express = require("express");
 const {generateRandomString, userAlreadyExists, userAuthenticator, userIDReturner, urlsForUser} = require('./helpers');
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const methodOverride = require('method-override');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -13,6 +14,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
 }));
+app.use(methodOverride('_method'));
 
 app.set("view engine", "ejs");
 
@@ -98,7 +100,6 @@ app.get("/login", (req, res) => {
 
 
 app.get("/urls/:shortURL", (req, res) => {
-  //determine if longURL exists, if it does not redirect to homepage
   let longURL = urlDatabase[req.params.shortURL].longURL;
   let currentUser = users[req.session["user_id"]];
   let display;
@@ -136,8 +137,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
-//To delete a url from database
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   let currentUser = users[req.session["user_id"]];
   // check if current user is logged in
   if (currentUser) {
@@ -153,7 +153,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 //To Update a long url
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   let currentUser = users[req.session["user_id"]];
   //check if URL belongs to user's list then they can edit
   if (urlsForUser(urlDatabase, currentUser.id)[req.params.shortURL]) {
@@ -163,8 +163,7 @@ app.post("/urls/:shortURL", (req, res) => {
     res.redirect("/urls");
   }
 });
-
-//To login to your profile 
+ 
 app.post("/login", (req, res) => {
   let userEmail = req.body.email;
   let userPassword = req.body.password;
@@ -177,7 +176,7 @@ app.post("/login", (req, res) => {
   } else {
     const templateVars = {
       error: "Error in credentials",
-      user: true //to show login page properly need to set to true to render page
+      user: null
     };
     res.render("login", templateVars);
     // res.status(403).redirect("/login"); -- alternative way to send error
@@ -190,7 +189,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-//generating a new user request
 app.post("/register", (req, res) => {
   let newId = generateRandomString();
   let newEmail = req.body.email;
@@ -198,14 +196,14 @@ app.post("/register", (req, res) => {
   //if email or password send error msg
   if (!newEmail || !newPassword) {
     const templateVars = {
-      user: true,
+      user: null,
       error: "Email or Password input error!"
     };
     res.render("register", templateVars);
     // res.status(400).redirect("/login"); --alternative send status code and redirect to login
   } else if (userAlreadyExists(users, newEmail)) {
     const templateVars = {
-      user: true,
+      user: null,
       error: "Email already exists as user!"
     };
     res.render("register", templateVars);
