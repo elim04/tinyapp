@@ -27,7 +27,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Edit url"](https://github.com/elim04/tinyapp/blob/master/docs/edit_url.gif)
 
 ### Register User
-!["Register User"]()
+!["Register User"](https://github.com/elim04/tinyapp/blob/master/docs/register_user.png)
 
 ### Login Page 
 !["Screenshot of Login Page"](https://github.com/elim04/tinyapp/blob/master/docs/login_page.png)
